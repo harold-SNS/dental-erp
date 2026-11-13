@@ -44,9 +44,9 @@ describe('9.1 Build Testing', () => {
   })
 
   describe('Prisma configuration', () => {
-    it('schema uses MySQL as database provider', () => {
-      const datasource = { provider: 'mysql', url: 'env("DATABASE_URL")' }
-      expect(datasource.provider).toBe('mysql')
+    it('schema uses PostgreSQL as database provider', () => {
+      const datasource = { provider: 'postgresql' }
+      expect(datasource.provider).toBe('postgresql')
     })
 
     it('generator targets native and debian binary', () => {
@@ -174,9 +174,9 @@ describe('9.1 Build Testing', () => {
 describe('9.3 Configuration Testing', () => {
   describe('Required environment variables', () => {
     it('DATABASE_URL is required and has correct format', () => {
-      const dbUrl = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/dental_erp'
+      const dbUrl = process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/dental_erp'
       expect(dbUrl).toBeDefined()
-      expect(dbUrl).toContain('mysql://')
+      expect(dbUrl).toMatch(/^postgres(?:ql)?:\/\//)
     })
 
     it('NEXTAUTH_SECRET is required for session security', () => {
@@ -221,45 +221,40 @@ describe('9.3 Configuration Testing', () => {
     it('invalid DATABASE_URL format is detectable', () => {
       const invalidUrls = [
         'not-a-url',
-        'postgres://localhost/db', // wrong provider
+        'https://localhost/db', // wrong provider
         '',
-        'mysql://', // incomplete
+        'postgresql://', // incomplete
       ]
 
       invalidUrls.forEach((url) => {
-        const isValid = url.startsWith('mysql://') && url.length > 'mysql://'.length + 5
+        const isValid = /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
         expect(isValid).toBe(false)
       })
     })
 
     it('valid DATABASE_URL is accepted', () => {
       const validUrls = [
-        'mysql://root:password@localhost:3306/dental_erp',
-        'mysql://user:pass@db.example.com:3306/dental_erp',
+        'postgresql://root:password@localhost:5432/dental_erp',
+        'postgresql://user:pass@db.example.com:5432/dental_erp',
       ]
 
       validUrls.forEach((url) => {
-        const isValid = url.startsWith('mysql://') && url.length > 'mysql://'.length + 5
+        const isValid = /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
         expect(isValid).toBe(true)
       })
     })
   })
 
-  describe('MySQL connection pool configuration', () => {
-    it('DB_HOST defaults to localhost', () => {
-      const host = process.env.DB_HOST || 'localhost'
-      expect(host).toBe('localhost')
+  describe('Neon PostgreSQL connection configuration', () => {
+    it('application uses pooled Neon URLs', () => {
+      const pooledUrl = 'postgresql://user:pass@ep-example-pooler.region.aws.neon.tech/db'
+      expect(pooledUrl).toContain('-pooler')
+      expect(pooledUrl).toMatch(/^postgresql:\/\//)
     })
 
-    it('DB_PORT defaults to 3306', () => {
-      const port = parseInt(process.env.DB_PORT || '3306')
-      expect(port).toBe(3306)
-    })
-
-    it('connection limit defaults to 10', () => {
-      const limit = 10
-      expect(limit).toBeGreaterThanOrEqual(5)
-      expect(limit).toBeLessThanOrEqual(50)
+    it('schema operations use a direct Neon URL', () => {
+      const directUrl = 'postgresql://user:pass@ep-example.region.aws.neon.tech/db'
+      expect(directUrl).not.toContain('-pooler')
     })
   })
 
