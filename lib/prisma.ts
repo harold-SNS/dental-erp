@@ -1,24 +1,30 @@
-import { PrismaMariaDb } from '@prisma/adapter-mariadb'
+import { neonConfig } from '@neondatabase/serverless'
+import { PrismaNeon } from '@prisma/adapter-neon'
 import { PrismaClient } from './generated/prisma/client'
-import { mariadbPoolConfig } from './database-url'
+import ws from 'ws'
 
 type Adapter = NonNullable<ConstructorParameters<typeof PrismaClient>[0]['adapter']>
 
-// Prisma 7 talks to MySQL through a JavaScript driver (mariadb) instead of its
-// own engine; DATABASE_URL is translated into the driver's settings.
+// Neon uses WebSockets in serverless Node.js environments. Supplying ws keeps
+// the transport explicit and consistent across local development and Vercel.
+neonConfig.webSocketConstructor = ws
+
 function createAdapter(): Adapter {
-  const url = process.env.DATABASE_URL
-  if (!url) {
-    // `next build` loads this module without a database. Fail on first use,
-    // as Prisma did before, rather than on import.
+  const connectionString = process.env.DATABASE_URL
+  if (!connectionString) {
+    // next build imports this module without requiring a live database.
     return {
-      provider: 'mysql',
-      adapterName: '@prisma/adapter-mariadb',
+      provider: 'postgresql',
+      adapterName: '@prisma/adapter-neon',
       connect: () => Promise.reject(new Error('DATABASE_URL is not set')),
     }
   }
-  const config = mariadbPoolConfig(url)
-  return new PrismaMariaDb(config, { database: config.database })
+
+  if (!/^postgres(?:ql)?:\/\//i.test(connectionString)) {
+    throw new Error('DATABASE_URL must be a PostgreSQL URL for Neon')
+  }
+
+  return new PrismaNeon({ connectionString })
 }
 
 const globalForPrisma = globalThis as unknown as {
@@ -32,9 +38,7 @@ export const prisma =
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
 
-// One client per process, in production too: Next.js bundles this module into
-// several server chunks (route handlers, pages, proxy.ts), and each copy would
-// otherwise open its own pool of connection_limit connections.
+// Reuse one Prisma client/pool per server process across Next.js server chunks.
 globalForPrisma.prisma = prisma
 
 export default prisma
