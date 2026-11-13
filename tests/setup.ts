@@ -98,7 +98,7 @@ vi.mock('next-intl', async () => {
 })
 
 // Mock environment variables
-process.env.DATABASE_URL = 'mysql://test:test@localhost:3306/dental_erp_test'
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/dental_erp_test?sslmode=disable'
 process.env.NEXTAUTH_SECRET = 'test-secret-key-for-testing'
 process.env.NEXTAUTH_URL = 'http://localhost:3000'
 process.env.OPENROUTER_API_KEY = 'test-openrouter-api-key'
