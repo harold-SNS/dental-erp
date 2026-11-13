@@ -174,7 +174,8 @@ describe('9.1 Build Testing', () => {
 describe('9.3 Configuration Testing', () => {
   describe('Required environment variables', () => {
     it('DATABASE_URL is required and has correct format', () => {
-      const dbUrl = process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/dental_erp'
+      const dbUrl =
+        process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/dental_erp'
       expect(dbUrl).toBeDefined()
       expect(dbUrl).toMatch(/^postgres(?:ql)?:\/\//)
     })
@@ -227,7 +228,8 @@ describe('9.3 Configuration Testing', () => {
       ]
 
       invalidUrls.forEach((url) => {
-        const isValid = /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
+        const isValid =
+          /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
         expect(isValid).toBe(false)
       })
     })
@@ -247,7 +249,8 @@ describe('9.3 Configuration Testing', () => {
 
   describe('Neon PostgreSQL connection configuration', () => {
     it('application uses pooled Neon URLs', () => {
-      const pooledUrl = 'postgresql://user:pass@ep-example-pooler.region.aws.neon.tech/db'
+      const pooledUrl =
+        'postgresql://user:pass@ep-example-pooler.region.aws.neon.tech/db'
       expect(pooledUrl).toContain('-pooler')
       expect(pooledUrl).toMatch(/^postgresql:\/\//)
     })
