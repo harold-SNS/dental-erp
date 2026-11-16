@@ -38,7 +38,9 @@ describe('9.1 Build Testing', () => {
     })
 
     it('server actions body size limit is configured', () => {
-      const config = { experimental: { serverActions: { bodySizeLimit: '10mb' } } }
+      const config = {
+        experimental: { serverActions: { bodySizeLimit: '10mb' } },
+      }
       expect(config.experimental.serverActions.bodySizeLimit).toBe('10mb')
     })
   })
@@ -125,7 +127,11 @@ describe('9.1 Build Testing', () => {
     })
 
     it('coverage targets lib, api, and components', () => {
-      const coverageInclude = ['lib/**/*.ts', 'app/api/**/*.ts', 'components/**/*.tsx']
+      const coverageInclude = [
+        'lib/**/*.ts',
+        'app/api/**/*.ts',
+        'components/**/*.tsx',
+      ]
       expect(coverageInclude).toContain('lib/**/*.ts')
       expect(coverageInclude).toContain('app/api/**/*.ts')
       expect(coverageInclude).toContain('components/**/*.tsx')
@@ -175,7 +181,8 @@ describe('9.3 Configuration Testing', () => {
   describe('Required environment variables', () => {
     it('DATABASE_URL is required and has correct format', () => {
       const dbUrl =
-        process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/dental_erp'
+        process.env.DATABASE_URL ||
+        'postgresql://user:password@localhost:5432/dental_erp'
       expect(dbUrl).toBeDefined()
       expect(dbUrl).toMatch(/^postgres(?:ql)?:\/\//)
     })
@@ -209,13 +216,17 @@ describe('9.3 Configuration Testing', () => {
   describe('Missing/invalid configuration handling', () => {
     it('missing DATABASE_URL should produce clear error', () => {
       const dbUrl = ''
-      const errorMessage = !dbUrl ? 'DATABASE_URL environment variable is required' : ''
+      const errorMessage = !dbUrl
+        ? 'DATABASE_URL environment variable is required'
+        : ''
       expect(errorMessage).toContain('DATABASE_URL')
     })
 
     it('missing NEXTAUTH_SECRET should produce clear error', () => {
       const secret = ''
-      const errorMessage = !secret ? 'NEXTAUTH_SECRET environment variable is required' : ''
+      const errorMessage = !secret
+        ? 'NEXTAUTH_SECRET environment variable is required'
+        : ''
       expect(errorMessage).toContain('NEXTAUTH_SECRET')
     })
 
@@ -229,7 +240,8 @@ describe('9.3 Configuration Testing', () => {
 
       invalidUrls.forEach((url) => {
         const isValid =
-          /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
+          /^postgres(?:ql)?:\/\//.test(url) &&
+          url.length > 'postgresql://'.length + 5
         expect(isValid).toBe(false)
       })
     })
@@ -241,7 +253,8 @@ describe('9.3 Configuration Testing', () => {
       ]
 
       validUrls.forEach((url) => {
-        const isValid = /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
+        const isValid =
+          /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.'.length + 5
         expect(isValid).toBe(true)
       })
     })
@@ -256,7 +269,8 @@ describe('9.3 Configuration Testing', () => {
     })
 
     it('schema operations use a direct Neon URL', () => {
-      const directUrl = 'postgresql://user:pass@ep-example.region.aws.neon.tech/db'
+      const directUrl =
+        'postgresql://user:pass@ep-example.region.aws.neon.tech/db'
       expect(directUrl).not.toContain('-pooler')
     })
   })
@@ -268,7 +282,10 @@ describe('9.3 Configuration Testing', () => {
         { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
         { key: 'X-XSS-Protection', value: '1; mode=block' },
         { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-        { key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), geolocation=()' },
+        {
+          key: 'Permissions-Policy',
+          value: 'camera=(self), microphone=(self), geolocation=()',
+        },
       ]
 
       const headerKeys = securityHeaders.map((h) => h.key)
@@ -280,7 +297,8 @@ describe('9.3 Configuration Testing', () => {
     })
 
     it('camera and microphone are restricted to self origin', () => {
-      const permissionsPolicy = 'camera=(self), microphone=(self), geolocation=()'
+      const permissionsPolicy =
+        'camera=(self), microphone=(self), geolocation=()'
       expect(permissionsPolicy).toContain('camera=(self)')
       expect(permissionsPolicy).toContain('microphone=(self)')
       expect(permissionsPolicy).toContain('geolocation=()')
@@ -295,7 +313,10 @@ describe('9.3 Configuration Testing', () => {
     it('CORS is configured for API routes', () => {
       const corsHeaders = [
         { key: 'Access-Control-Allow-Origin', value: '*' },
-        { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, PATCH, DELETE, OPTIONS' },
+        {
+          key: 'Access-Control-Allow-Methods',
+          value: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+        },
         {
           key: 'Access-Control-Allow-Headers',
           value: 'Content-Type, Authorization, Cookie, X-CSRF-Token',
@@ -303,7 +324,9 @@ describe('9.3 Configuration Testing', () => {
         { key: 'Access-Control-Allow-Credentials', value: 'true' },
       ]
 
-      const methods = corsHeaders.find((h) => h.key === 'Access-Control-Allow-Methods')?.value
+      const methods = corsHeaders.find(
+        (h) => h.key === 'Access-Control-Allow-Methods',
+      )?.value
       expect(methods).toContain('GET')
       expect(methods).toContain('POST')
       expect(methods).toContain('PUT')
@@ -434,7 +457,11 @@ describe('9.5 Rollback Testing Patterns', () => {
       entityId: 'p1',
       userId: 'user-1',
       hospitalId: 'h1',
-      details: JSON.stringify({ field: 'phone', oldValue: '9876543210', newValue: '9876543211' }),
+      details: JSON.stringify({
+        field: 'phone',
+        oldValue: '9876543210',
+        newValue: '9876543211',
+      }),
       timestamp: new Date().toISOString(),
     }
 
