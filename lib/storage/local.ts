@@ -30,7 +30,7 @@ export class LocalStorageDriver implements StorageDriver {
     // Relative values resolve against cwd, matching what the routes did before.
     this.root = path.resolve(
       /* turbopackIgnore: true */ process.cwd(),
-      options.root?.trim() || 'uploads',
+      options.root?.trim() || 'uploads'
     )
   }
 
