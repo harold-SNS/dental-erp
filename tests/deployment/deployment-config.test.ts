@@ -127,11 +127,7 @@ describe('9.1 Build Testing', () => {
     })
 
     it('coverage targets lib, api, and components', () => {
-      const coverageInclude = [
-        'lib/**/*.ts',
-        'app/api/**/*.ts',
-        'components/**/*.tsx',
-      ]
+      const coverageInclude = ['lib/**/*.ts', 'app/api/**/*.ts', 'components/**/*.tsx']
       expect(coverageInclude).toContain('lib/**/*.ts')
       expect(coverageInclude).toContain('app/api/**/*.ts')
       expect(coverageInclude).toContain('components/**/*.tsx')
@@ -181,8 +177,7 @@ describe('9.3 Configuration Testing', () => {
   describe('Required environment variables', () => {
     it('DATABASE_URL is required and has correct format', () => {
       const dbUrl =
-        process.env.DATABASE_URL ||
-        'postgresql://user:password@localhost:5432/dental_erp'
+        process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/dental_erp'
       expect(dbUrl).toBeDefined()
       expect(dbUrl).toMatch(/^postgres(?:ql)?:\/\//)
     })
@@ -216,17 +211,13 @@ describe('9.3 Configuration Testing', () => {
   describe('Missing/invalid configuration handling', () => {
     it('missing DATABASE_URL should produce clear error', () => {
       const dbUrl = ''
-      const errorMessage = !dbUrl
-        ? 'DATABASE_URL environment variable is required'
-        : ''
+      const errorMessage = !dbUrl ? 'DATABASE_URL environment variable is required' : ''
       expect(errorMessage).toContain('DATABASE_URL')
     })
 
     it('missing NEXTAUTH_SECRET should produce clear error', () => {
       const secret = ''
-      const errorMessage = !secret
-        ? 'NEXTAUTH_SECRET environment variable is required'
-        : ''
+      const errorMessage = !secret ? 'NEXTAUTH_SECRET environment variable is required' : ''
       expect(errorMessage).toContain('NEXTAUTH_SECRET')
     })
 
@@ -239,9 +230,7 @@ describe('9.3 Configuration Testing', () => {
       ]
 
       invalidUrls.forEach((url) => {
-        const isValid =
-          /^postgres(?:ql)?:\/\//.test(url) &&
-          url.length > 'postgresql://'.length + 5
+        const isValid = /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
         expect(isValid).toBe(false)
       })
     })
@@ -253,8 +242,7 @@ describe('9.3 Configuration Testing', () => {
       ]
 
       validUrls.forEach((url) => {
-        const isValid =
-          /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
+        const isValid = /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
         expect(isValid).toBe(true)
       })
     })
@@ -262,15 +250,13 @@ describe('9.3 Configuration Testing', () => {
 
   describe('Neon PostgreSQL connection configuration', () => {
     it('application uses pooled Neon URLs', () => {
-      const pooledUrl =
-        'postgresql://user:pass@ep-example-pooler.region.aws.neon.tech/db'
+      const pooledUrl = 'postgresql://user:pass@ep-example-pooler.region.aws.neon.tech/db'
       expect(pooledUrl).toContain('-pooler')
       expect(pooledUrl).toMatch(/^postgresql:\/\//)
     })
 
     it('schema operations use a direct Neon URL', () => {
-      const directUrl =
-        'postgresql://user:pass@ep-example.region.aws.neon.tech/db'
+      const directUrl = 'postgresql://user:pass@ep-example.region.aws.neon.tech/db'
       expect(directUrl).not.toContain('-pooler')
     })
   })
@@ -297,8 +283,7 @@ describe('9.3 Configuration Testing', () => {
     })
 
     it('camera and microphone are restricted to self origin', () => {
-      const permissionsPolicy =
-        'camera=(self), microphone=(self), geolocation=()'
+      const permissionsPolicy = 'camera=(self), microphone=(self), geolocation=()'
       expect(permissionsPolicy).toContain('camera=(self)')
       expect(permissionsPolicy).toContain('microphone=(self)')
       expect(permissionsPolicy).toContain('geolocation=()')
@@ -324,9 +309,7 @@ describe('9.3 Configuration Testing', () => {
         { key: 'Access-Control-Allow-Credentials', value: 'true' },
       ]
 
-      const methods = corsHeaders.find(
-        (h) => h.key === 'Access-Control-Allow-Methods',
-      )?.value
+      const methods = corsHeaders.find((h) => h.key === 'Access-Control-Allow-Methods')?.value
       expect(methods).toContain('GET')
       expect(methods).toContain('POST')
       expect(methods).toContain('PUT')
