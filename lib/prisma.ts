@@ -14,7 +14,7 @@ function createAdapter(): Adapter {
   if (!connectionString) {
     // next build imports this module without requiring a live database.
     return {
-      provider: 'postgresql',
+      provider: 'postgres',
       adapterName: '@prisma/adapter-neon',
       connect: () => Promise.reject(new Error('DATABASE_URL is not set')),
     }
