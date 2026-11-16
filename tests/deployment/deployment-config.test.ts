@@ -254,7 +254,7 @@ describe('9.3 Configuration Testing', () => {
 
       validUrls.forEach((url) => {
         const isValid =
-          /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.'.length + 5
+          /^postgres(?:ql)?:\/\//.test(url) && url.length > 'postgresql://'.length + 5
         expect(isValid).toBe(true)
       })
     })
