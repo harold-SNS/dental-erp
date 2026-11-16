@@ -65,7 +65,7 @@ const oidcPlugins = oidcEnabled
   : []
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, { provider: 'mysql' }),
+  database: prismaAdapter(prisma, { provider: 'postgresql' }),
   // Prefer the dedicated Better Auth secret; retain NEXTAUTH_SECRET as a
   // backwards-compatible fallback for existing self-hosted deployments.
   secret: process.env.BETTER_AUTH_SECRET || process.env.NEXTAUTH_SECRET,
