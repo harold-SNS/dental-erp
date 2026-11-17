@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { signIn, oidcEnabled, signInWithOidc } from '@/lib/auth-client'
 import { useTranslations } from 'next-intl'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -29,6 +29,12 @@ function LoginForm() {
   const tCommon = useTranslations('common')
   const [isLoading, setIsLoading] = useState(false)
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+
+  // Idempotently provisions the environment-configured platform administrator.
+  // The endpoint never returns credentials or password hashes.
+  useEffect(() => {
+    fetch('/api/internal/bootstrap-superadmin', { method: 'POST' }).catch(() => undefined)
+  }, [])
 
   const {
     register,
@@ -125,18 +131,8 @@ function LoginForm() {
           </div>
         )}
 
-        <div className="mt-6 text-center text-sm">
-          <p className="text-muted-foreground">
-            {t('noAccount')}{' '}
-            <a href="/signup" className="text-primary hover:underline">
-              {t('signUp')}
-            </a>
-          </p>
-        </div>
-
-        <div className="mt-4 text-center text-xs text-muted-foreground border-t pt-4">
-          <p>{t('demoCredentials')}</p>
-          <p className="font-mono mt-1">admin@demo-dental.com / Admin@123</p>
+        <div className="mt-6 border-t pt-4 text-center text-sm text-muted-foreground">
+          Hospital access is managed by your system administrator. Contact your administrator if you need an account.
         </div>
       </CardContent>
     </Card>

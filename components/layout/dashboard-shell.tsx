@@ -9,6 +9,7 @@ import { CommandBar } from '@/components/ai/command-bar'
 import { ChatWidget } from '@/components/ai/chat-widget'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { KeyboardShortcutHelp } from '@/components/layout/keyboard-shortcut-help'
+import { SuperAdminHospitalSwitcher } from '@/components/layout/super-admin-hospital-switcher'
 
 interface DashboardShellProps {
   children: React.ReactNode
@@ -16,7 +17,10 @@ interface DashboardShellProps {
     name: string
     email: string
     role: string
+    isSuperAdmin?: boolean
   }
+  hospitals?: { id: string; name: string }[]
+  activeHospitalId?: string
   hospital?: {
     name: string
     plan: string
@@ -24,7 +28,7 @@ interface DashboardShellProps {
   }
 }
 
-export function DashboardShell({ children, user, hospital }: DashboardShellProps) {
+export function DashboardShell({ children, user, hospital, hospitals = [], activeHospitalId = '' }: DashboardShellProps) {
   return (
     <AIProvider>
       <SidebarProvider>
@@ -51,6 +55,9 @@ export function DashboardShell({ children, user, hospital }: DashboardShellProps
           <div className="flex flex-1 flex-col overflow-hidden">
             <Header user={user} />
             <main className="flex-1 overflow-auto bg-muted/30 p-4 md:p-6">
+              {user.isSuperAdmin && hospitals.length > 0 && (
+                <SuperAdminHospitalSwitcher hospitals={hospitals} activeHospitalId={activeHospitalId} />
+              )}
               <Breadcrumb className="mb-4" />
               {children}
             </main>
