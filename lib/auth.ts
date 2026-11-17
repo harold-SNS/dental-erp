@@ -183,7 +183,7 @@ export async function getServerSession() {
   // Super Admins keep one identity and can operate in any hospital context.
   // The active hospital is stored in a server-set, HTTP-only cookie.
   const cookieHeader = requestHeaders.get('cookie') || ''
-  const activeId = cookieHeader.match(/(?:^|;\\s*)dental-erp-active-hospital=([^;]+)/)?.[1]
+  const activeId = cookieHeader.match(/(?:^|;\s*)dental-erp-active-hospital=([^;]+)/)?.[1]
   if (!activeId) return session
   const hospitalId = decodeURIComponent(activeId)
   const hospital = await prisma.hospital.findFirst({
