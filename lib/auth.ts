@@ -93,6 +93,7 @@ export const auth = betterAuth({
       role: { type: 'string', input: false, required: false },
       hospitalId: { type: 'string', input: false, required: false },
       isHospitalAdmin: { type: 'boolean', input: false, required: false, defaultValue: false },
+      isSuperAdmin: { type: 'boolean', input: false, required: false, defaultValue: false },
     },
   },
   session: {
