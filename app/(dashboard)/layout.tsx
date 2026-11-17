@@ -11,7 +11,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect('/login')
   }
 
-  const hospitalId = (session.user as { hospitalId?: string }).hospitalId
+  const sessionUser = session.user as { hospitalId?: string; isSuperAdmin?: boolean }
+  const hospitalId = sessionUser.hospitalId
+  const availableHospitals = sessionUser.isSuperAdmin
+    ? await prisma.hospital.findMany({ where: { isActive: true }, orderBy: { name: 'asc' }, select: { id: true, name: true } })
+    : []
 
   // Fetch hospital info
   const hospital = hospitalId
@@ -32,11 +36,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect('/onboarding')
   }
 
-  const su = session.user as { name?: string; email?: string; role?: string }
+  const su = session.user as { name?: string; email?: string; role?: string; isSuperAdmin?: boolean }
   const user = {
     name: su.name || 'User',
     email: su.email || '',
     role: su.role || 'RECEPTIONIST',
+    isSuperAdmin: !!su.isSuperAdmin,
   }
 
   const hospitalInfo = hospital
@@ -49,7 +54,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <ClinicLocaleProvider currency={hospital?.currency || 'INR'}>
-      <DashboardShell user={user} hospital={hospitalInfo}>
+      <DashboardShell user={user} hospital={hospitalInfo} hospitals={availableHospitals} activeHospitalId={hospitalId || ''}>
         {children}
       </DashboardShell>
     </ClinicLocaleProvider>
