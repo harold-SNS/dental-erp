@@ -176,7 +176,22 @@ export type AppSession = typeof auth.$Infer.Session
 // action. Replaces next-auth's `auth()`; returns { user, session } | null.
 export async function getServerSession() {
   const { headers } = await import('next/headers')
-  return auth.api.getSession({ headers: await headers() })
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({ headers: requestHeaders })
+  if (!session?.user || !(session.user as { isSuperAdmin?: boolean }).isSuperAdmin) return session
+
+  // Super Admins keep one identity and can operate in any hospital context.
+  // The active hospital is stored in a server-set, HTTP-only cookie.
+  const cookieHeader = requestHeaders.get('cookie') || ''
+  const activeId = cookieHeader.match(/(?:^|;\\s*)dental-erp-active-hospital=([^;]+)/)?.[1]
+  if (!activeId) return session
+  const hospitalId = decodeURIComponent(activeId)
+  const hospital = await prisma.hospital.findFirst({
+    where: { id: hospitalId, isActive: true },
+    select: { id: true },
+  })
+  if (!hospital) return session
+  return { ...session, user: { ...session.user, hospitalId: hospital.id } }
 }
 
 // Helper: current staff user (web session) or null.
