@@ -212,6 +212,7 @@ model User {
   role               Role      @default(RECEPTIONIST)
   isActive           Boolean   @default(true)
   isHospitalAdmin    Boolean   @default(false)
+  isSuperAdmin       Boolean   @default(false)
   emailVerified      DateTime?
   image              String?
   mustChangePassword Boolean   @default(false)
